@@ -18,7 +18,7 @@ import { useState, useEffect, useRef } from "react";
 // POZNÁMKA: Pokud necháš FIREBASE_URL prázdné, aplikace použije localStorage 
 // jako fallback (data jsou lokální, BEZ sync mezi zařízeními).
 // ===========================================================================
-const FIREBASE_URL = ""; // <-- Sem vlož URL Firebase databáze
+const FIREBASE_URL = "https://nippan-pos-13a13-default-rtdb.europe-west1.firebasedatabase.app"; // <-- Sem vlož URL Firebase databáze
 
 export default function App() {
   const [view, setView] = useState("kasa");
