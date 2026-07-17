@@ -6,7 +6,7 @@ import { useState, useEffect, useRef } from "react";
 // ⚠️ KROK 1 (POVINNÝ): Vlož svoji Firebase URL na řádek níže.
 //    Bez ní NEFUNGUJE sdílená číselná řada zákazníků mezi zařízeními!
 // ===========================================================================
-const FIREBASE_URL = "https://nippan-pos-13a13-default-rtdb.europe-west1.firebasedatabase.app"; // <-- SEM VLOŽ Firebase URL (bez lomítka na konci!)
+const FIREBASE_URL = "https://nippan-pos-14a14-default-rtdb.europe-west1.firebasedatabase.app/.json"; // <-- SEM VLOŽ Firebase URL (bez lomítka na konci!)
 
 // Číselná řada zákazníků: 1 .. MAX_CUSTOMER, pak zase od 1
 const MAX_CUSTOMER = 200;
