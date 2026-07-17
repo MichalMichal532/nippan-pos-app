@@ -1036,4 +1036,3 @@ function StationView({ title, emptyEmoji, orders, stationType, ageText, syncAgo,
     </div>
   );
 }
-Tanabata v14
