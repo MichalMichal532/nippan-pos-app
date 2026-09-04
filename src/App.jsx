@@ -1,7 +1,7 @@
 import { useState, useEffect, useRef } from "react";
 
 // ===========================================================================
-// NIPPAN POS v14 — TANABATA 2026 EDITION
+// NIPPAN POS v15 — JAPONSKÉ DNY 2026 (Průhonice, 5.–6. 9.)
 // ===========================================================================
 // ⚠️ KROK 1 (POVINNÝ): Vlož svoji Firebase URL na řádek níže.
 //    Bez ní NEFUNGUJE sdílená číselná řada zákazníků mezi zařízeními!
@@ -16,6 +16,10 @@ const STATS_PIN = "1173";
 
 // Unikátní ID tohoto zařízení (pro bezpečné přidělování čísel)
 const DEVICE_ID = Math.random().toString(36).slice(2, 10);
+
+// Volba mléka: latte, káva i teplá matcha. Led: všechny drinky KROMĚ teplých.
+const hasMilk = (cat) => cat === "latte" || cat === "coffee" || cat === "hot";
+const isHot = (cat) => cat === "hot";
 
 export default function App() {
   const [view, setView] = useState("kasa");
@@ -45,25 +49,35 @@ export default function App() {
   const reservingRef = useRef(false);
 
   // =========================================================================
-  // MENU — TANABATA 2026
+  // MENU — JAPONSKÉ DNY 2026 (Průhonice)
   // =========================================================================
 
   const limos = [
     { id: "yuzu", name: "Yuzu Matcha Lemonade", emoji: "🍋", price: 129, type: "drink", category: "limo", bg: "bg-green-50", border: "border-green-500", text: "text-green-900",
       recipe: ["Kelímek s ledem (120 g)", "50 ml matcha premix", "50 ml yuzu báze — LAHEV PROTŘEPAT!", "Doplnit sodou (~180 ml)", "Promíchat lžící, NEzatřepat!", "Brčko"] },
-    { id: "bezinka", name: "Bezinka Matcha Lemonade", emoji: "🌸", price: 129, type: "drink", category: "limo", bg: "bg-green-50", border: "border-green-500", text: "text-green-900",
-      recipe: ["Kelímek s ledem (80 g — MÉNĚ!)", "50 ml matcha premix", "35 ml bezinkový sirup", "Doplnit sodou (~180 ml)", "Dozdobit 2 lístky máty", "Brčko + víčko"] },
-    { id: "fizz", name: "Lime Matcha Fizz", emoji: "🌅", price: 119, type: "drink", category: "limo", bg: "bg-green-50", border: "border-green-500", text: "text-green-900",
-      recipe: ["Kelímek s ledem (do 3/4)", "35 ml Monin Lime Juice (3-4 pumpy)", "15 ml cukrový sirup", "Doplnit sodou (~230 ml)", "Promíchat — JEN SPODEK", "50 ml matcha premix POMALU shora přes lžíci", "Dozdobit plátkem limetky", "Brčko + víčko — NEMÍCHAT!"] },
+    { id: "mango-limo", name: "Mango Matcha Lemonade", emoji: "🥭", price: 119, type: "drink", category: "limo", bg: "bg-green-50", border: "border-green-500", text: "text-green-900",
+      recipe: ["⚠️ RECEPT OVĚŘIT PŘED AKCÍ", "Kelímek s ledem (120 g)", "50 ml matcha premix", "35 ml mangové pyré / sirup", "Doplnit sodou (~180 ml)", "Promíchat lžící, NEzatřepat!", "Brčko"] },
   ];
 
   const lattes = [
-    { id: "strawberry", name: "Strawberry Matcha Latte", emoji: "🍓", price: 139, type: "drink", category: "latte", bg: "bg-orange-50", border: "border-orange-500", text: "text-orange-900",
-      recipe: ["Kelímek s ledem (120 g)", "35 ml jahodového pyré (dno)", "200 ml mléko (dle volby)", "50 ml matcha premix (shora)", "Brčko + víčko"] },
+    { id: "classic", name: "Matcha Latte", emoji: "🍵", price: 119, type: "drink", category: "latte", bg: "bg-orange-50", border: "border-orange-500", text: "text-orange-900",
+      recipe: ["Kelímek s ledem (120 g)", "50 ml matcha premix", "200 ml mléko (dle volby)", "NA DOTAZ: 15 ml cukrový sirup (1 pump)", "Brčko + víčko"] },
+    { id: "earlgrey-iced", name: "Earl Grey Matcha Latte", emoji: "🫖", price: 139, type: "drink", category: "latte", bg: "bg-orange-50", border: "border-orange-500", text: "text-orange-900",
+      recipe: ["⚠️ RECEPT OVĚŘIT PŘED AKCÍ", "Kelímek s ledem (120 g)", "35 ml earl grey báze (dno)", "200 ml mléko (dle volby)", "50 ml matcha premix (shora)", "Brčko + víčko"] },
     { id: "mango", name: "Mango Matcha Latte", emoji: "🥭", price: 139, type: "drink", category: "latte", bg: "bg-orange-50", border: "border-orange-500", text: "text-orange-900",
       recipe: ["Kelímek s ledem (120 g)", "35 ml mangového pyré (dno)", "200 ml mléko (dle volby)", "50 ml matcha premix (shora)", "Víčko, krátké zatřepání", "Brčko + víčko"] },
-    { id: "classic", name: "Iced Matcha Latte", emoji: "🍵", price: 119, type: "drink", category: "latte", bg: "bg-orange-50", border: "border-orange-500", text: "text-orange-900",
-      recipe: ["Kelímek s ledem (120 g)", "50 ml matcha premix", "200 ml mléko (dle volby)", "NA DOTAZ: 15 ml cukrový sirup (1 pump)", "Brčko + víčko"] },
+    { id: "strawberry", name: "Strawberry Matcha Latte", emoji: "🍓", price: 139, type: "drink", category: "latte", bg: "bg-orange-50", border: "border-orange-500", text: "text-orange-900",
+      recipe: ["Kelímek s ledem (120 g)", "35 ml jahodového pyré (dno)", "200 ml mléko (dle volby)", "50 ml matcha premix (shora)", "Brčko + víčko"] },
+  ];
+
+  // ---- HOT MATCHA (teplé nápoje — bez ledu) -------------------------------
+  const hots = [
+    { id: "hot-matcha-latte", name: "Matcha Latte", emoji: "🔥", price: 110, type: "drink", category: "hot", bg: "bg-red-50", border: "border-red-500", text: "text-red-900",
+      recipe: ["⚠️ RECEPT OVĚŘIT PŘED AKCÍ", "50 ml matcha premix do kelímku", "~200 ml napěněné horké mléko (dle volby)", "Kelímek 300 ml + víčko", "NEDÁVAT LED"] },
+    { id: "hot-earlgrey-latte", name: "Earl Grey Matcha Latte", emoji: "🫖", price: 129, type: "drink", category: "hot", bg: "bg-red-50", border: "border-red-500", text: "text-red-900",
+      recipe: ["⚠️ RECEPT OVĚŘIT PŘED AKCÍ", "35 ml earl grey báze do kelímku", "50 ml matcha premix", "~200 ml napěněné horké mléko (dle volby)", "Kelímek 300 ml + víčko", "NEDÁVAT LED"] },
+    { id: "hot-hojicha-latte", name: "Hojicha Latte", emoji: "🌰", price: 100, type: "drink", category: "hot", bg: "bg-red-50", border: "border-red-500", text: "text-red-900",
+      recipe: ["⚠️ RECEPT OVĚŘIT PŘED AKCÍ", "50 ml hojicha premix do kelímku", "~200 ml napěněné horké mléko (dle volby)", "Kelímek 300 ml + víčko", "NEDÁVAT LED"] },
   ];
 
   const coffees = [
@@ -81,7 +95,7 @@ export default function App() {
       recipe: ["Kelímek s ledem (120 g)", "Espresso 36 ml", "~200 ml studené mléko", "Víčko + brčko"] },
   ];
 
-  const drinks = [...limos, ...lattes, ...coffees];
+  const drinks = [...limos, ...lattes, ...hots, ...coffees];
 
   // ---- GELATO (Angelato × NIPPAN TEA) -------------------------------------
   const GELATO_FLAVORS = [
@@ -122,8 +136,11 @@ export default function App() {
   ];
 
   const merchant = [
+    { id: "dopusy", name: "Nanuk DO:PUSY", emoji: "🍧", price: 49, type: "extra", bg: "bg-sky-50", border: "border-sky-500", text: "text-sky-900" },
+    { id: "angelato-cup", name: "Angelato kelímek", emoji: "🍨", price: 99, type: "extra", bg: "bg-fuchsia-50", border: "border-fuchsia-500", text: "text-fuchsia-900" },
     { id: "seicha", name: "Seicha Lemonade", emoji: "🍃", price: 80, type: "extra", bg: "bg-emerald-50", border: "border-emerald-500", text: "text-emerald-900" },
-    { id: "moya-yuzu", name: "YUZU MOYA Lemonade", emoji: "🥫", price: 80, type: "extra", bg: "bg-cyan-50", border: "border-cyan-500", text: "text-cyan-900" },
+    { id: "moya-cans", name: "MOYA cans", emoji: "🥫", price: 80, type: "extra", bg: "bg-cyan-50", border: "border-cyan-500", text: "text-cyan-900" },
+    { id: "hata-ramune", name: "Hata Ramune", emoji: "🫧", price: 70, type: "extra", bg: "bg-cyan-50", border: "border-cyan-500", text: "text-cyan-900" },
     { id: "snack100", name: "Jap. snack 100", emoji: "🍡", price: 100, type: "extra", bg: "bg-rose-50", border: "border-rose-400", text: "text-rose-900" },
     { id: "snack110", name: "Jap. snack 110", emoji: "🍘", price: 110, type: "extra", bg: "bg-rose-50", border: "border-rose-400", text: "text-rose-900" },
   ];
@@ -341,9 +358,9 @@ export default function App() {
   // =========================================================================
   const addToCart = (item) => {
     const cartItem = { ...item, cartId: `${item.id}-${Date.now()}-${Math.random().toString(36).substr(2, 5)}` };
-    if (item.category === "latte" || item.category === "coffee") cartItem.milk = "standard";
+    if (hasMilk(item.category)) cartItem.milk = "standard";
     if (item.category === "coffee") cartItem.shot = 0;
-    if (item.type === "drink") cartItem.ice = "standard";
+    if (item.type === "drink" && !isHot(item.category)) cartItem.ice = "standard";
     if (item.type === "gelato") cartItem.flavors = [];
     if (cart.length === 0) {
       setCartExpanded(true);
@@ -355,9 +372,9 @@ export default function App() {
   const buildCartGroups = (cartArray) => {
     const groups = [];
     cartArray.forEach((item, originalIdx) => {
-      const milkKey = (item.category === "latte" || item.category === "coffee") ? item.milk : "";
+      const milkKey = hasMilk(item.category) ? item.milk : "";
       const shotKey = item.category === "coffee" ? String(item.shot || 0) : "";
-      const iceKey = item.type === "drink" ? (item.ice || "standard") : "";
+      const iceKey = (item.type === "drink" && !isHot(item.category)) ? (item.ice || "standard") : "";
       const flavKey = item.type === "gelato" ? (item.flavors || []).join("+") : "";
       const groupKey = `${item.id}|${milkKey}|${shotKey}|${iceKey}|${flavKey}`;
       const existing = groups.find(g => g.key === groupKey);
@@ -390,9 +407,9 @@ export default function App() {
       ...group.item,
       cartId: `${group.item.id}-${Date.now()}-${Math.random().toString(36).substr(2, 5)}`,
     };
-    if (group.item.category === "latte" || group.item.category === "coffee") cartItem.milk = group.item.milk || "standard";
+    if (hasMilk(group.item.category)) cartItem.milk = group.item.milk || "standard";
     if (group.item.category === "coffee") cartItem.shot = group.item.shot || 0;
-    if (group.item.type === "drink") cartItem.ice = group.item.ice || "standard";
+    if (group.item.type === "drink" && !isHot(group.item.category)) cartItem.ice = group.item.ice || "standard";
     if (group.item.type === "gelato") cartItem.flavors = [...(group.item.flavors || [])];
     setCart(prev => [...prev, cartItem]);
   };
@@ -546,9 +563,9 @@ export default function App() {
       <div className="bg-stone-900 text-white sticky top-0 z-30 shadow-lg">
         <div className="px-3 py-2 flex justify-between items-center">
           <div className="flex items-center gap-2">
-            <span className="text-xl">🎋</span>
+            <span className="text-xl">⛩️</span>
             <span className="font-bold tracking-wide text-sm">NIPPAN POS</span>
-            <span className="text-[10px] text-stone-500 font-mono">TANABATA</span>
+            <span className="text-[10px] text-stone-500 font-mono">JAPONSKÉ DNY</span>
           </div>
           <div className="text-xs font-mono opacity-75 flex items-center gap-2">
             <span className={`px-1.5 py-0.5 rounded text-[10px] font-bold ${FIREBASE_URL ? "bg-green-600 text-white" : "bg-amber-600 text-white"}`}>
@@ -605,16 +622,22 @@ export default function App() {
               </div>
             </div>
 
-            {/* MATCHA */}
+            {/* MATCHA — STUDENÉ */}
             <div className="grid grid-cols-2 gap-2 mb-3">
               <div>
-                <SectionLabel className="bg-green-700">LIMO</SectionLabel>
+                <SectionLabel className="bg-green-700">🧊 ICED LEMONADE</SectionLabel>
                 <div className="grid gap-2">{limos.map(i => <ItemBtn key={i.id} item={i} big />)}</div>
               </div>
               <div>
-                <SectionLabel className="bg-orange-600">LATTE</SectionLabel>
+                <SectionLabel className="bg-orange-600">🧊 ICED LATTE</SectionLabel>
                 <div className="grid gap-2">{lattes.map(i => <ItemBtn key={i.id} item={i} big />)}</div>
               </div>
+            </div>
+
+            {/* MATCHA — TEPLÉ */}
+            <SectionLabel className="bg-red-700">🔥 HOT MATCHA</SectionLabel>
+            <div className="grid grid-cols-3 gap-2 mb-3">
+              {hots.map(i => <ItemBtn key={i.id} item={i} />)}
             </div>
 
             {/* GELATO */}
@@ -735,8 +758,8 @@ export default function App() {
                             </div>
                           )}
 
-                          {/* MLÉKO (latte + káva) */}
-                          {(item.category === "latte" || item.category === "coffee") && (
+                          {/* MLÉKO (latte + káva + teplá matcha) */}
+                          {hasMilk(item.category) && (
                             <div className="mt-2 pt-2 border-t border-stone-200">
                               <div className="text-[10px] uppercase font-bold tracking-wider text-stone-500 mb-1">Mléko:</div>
                               <div className="grid grid-cols-3 gap-1">
@@ -759,8 +782,8 @@ export default function App() {
                             </div>
                           )}
 
-                          {/* LED (všechny drinky) */}
-                          {item.type === "drink" && (
+                          {/* LED (všechny studené drinky) */}
+                          {item.type === "drink" && !isHot(item.category) && (
                             <div className="mt-2">
                               <div className="text-[10px] uppercase font-bold tracking-wider text-stone-500 mb-1">Led:</div>
                               <div className="grid grid-cols-3 gap-1">
@@ -987,6 +1010,7 @@ function StationView({ title, emptyEmoji, orders, stationType, ageText, syncAgo,
                                     {flavorEmoji(f)} {flavorName(f)}
                                   </div>
                                 ))}
+                                {isHot(item.category) && <div className="inline-block text-xs font-bold px-2 py-0.5 rounded bg-red-600 text-white">🔥 HORKÉ</div>}
                                 {milkBadge && <div className={`inline-block text-xs font-bold px-2 py-0.5 rounded ${milkBadgeColor(item.milk)}`}>🥛 {milkBadge}</div>}
                                 {item.shot > 0 && <div className="inline-block text-xs font-bold px-2 py-0.5 rounded bg-amber-800 text-white">☕ +{item.shot} SHOT</div>}
                                 {item.ice === "less" && <div className="inline-block text-xs font-bold px-2 py-0.5 rounded bg-sky-500 text-white">🧊 MÁLO LEDU</div>}
