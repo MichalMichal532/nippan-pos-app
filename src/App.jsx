@@ -107,9 +107,10 @@ export default function App() {
     { id: "mango", name: "Mango", emoji: "🥭" },
   ];
 
-  const gelato = [
-    { id: "gelato1", name: "Gelato 1 porce", emoji: "🍦", price: 89, type: "gelato", scoops: 1, bg: "bg-fuchsia-50", border: "border-fuchsia-500", text: "text-fuchsia-900" },
-    { id: "gelato2", name: "Gelato 2 porce", emoji: "🍨", price: 129, type: "gelato", scoops: 2, bg: "bg-fuchsia-50", border: "border-fuchsia-500", text: "text-fuchsia-900" },
+  // Balené zboží z mrazáku — vydává kasa, nejde přes výdejní stanici.
+  const iceCream = [
+    { id: "dopusy", name: "Nanuk DO:PUSY", emoji: "🍧", price: 59, type: "extra", bg: "bg-sky-50", border: "border-sky-500", text: "text-sky-900" },
+    { id: "angelato-cup", name: "Angelato kelímek", emoji: "🍨", price: 99, type: "extra", bg: "bg-fuchsia-50", border: "border-fuchsia-500", text: "text-fuchsia-900" },
   ];
 
   // ---- PEČIVO -------------------------------------------------------------
@@ -121,7 +122,7 @@ export default function App() {
     { id: "anpan", name: "Anpan", emoji: "🥯", price: 70, type: "extra", bg: "bg-amber-50", border: "border-amber-500", text: "text-amber-900" },
     { id: "kuma-pan", name: "Kuma Pan (čoko)", emoji: "🐻", price: 80, type: "extra", bg: "bg-amber-50", border: "border-amber-500", text: "text-amber-900" },
     { id: "muffin", name: "Jogurtový muffin", emoji: "🧁", price: 60, type: "extra", bg: "bg-amber-50", border: "border-amber-500", text: "text-amber-900" },
-    { id: "piknik-box", name: "Tanabata Piknik Box", emoji: "🎋", price: 130, type: "extra", bg: "bg-pink-50", border: "border-pink-500", text: "text-pink-900" },
+    { id: "piknik-box", name: "Piknik Box", emoji: "🧺", price: 130, type: "extra", bg: "bg-pink-50", border: "border-pink-500", text: "text-pink-900" },
   ];
 
   const pastrySavory = [
@@ -136,8 +137,6 @@ export default function App() {
   ];
 
   const merchant = [
-    { id: "dopusy", name: "Nanuk DO:PUSY", emoji: "🍧", price: 49, type: "extra", bg: "bg-sky-50", border: "border-sky-500", text: "text-sky-900" },
-    { id: "angelato-cup", name: "Angelato kelímek", emoji: "🍨", price: 99, type: "extra", bg: "bg-fuchsia-50", border: "border-fuchsia-500", text: "text-fuchsia-900" },
     { id: "seicha", name: "Seicha Lemonade", emoji: "🍃", price: 80, type: "extra", bg: "bg-emerald-50", border: "border-emerald-500", text: "text-emerald-900" },
     { id: "moya-cans", name: "MOYA cans", emoji: "🥫", price: 80, type: "extra", bg: "bg-cyan-50", border: "border-cyan-500", text: "text-cyan-900" },
     { id: "hata-ramune", name: "Hata Ramune", emoji: "🫧", price: 70, type: "extra", bg: "bg-cyan-50", border: "border-cyan-500", text: "text-cyan-900" },
@@ -640,13 +639,10 @@ export default function App() {
               {hots.map(i => <ItemBtn key={i.id} item={i} />)}
             </div>
 
-            {/* GELATO */}
-            <SectionLabel className="bg-fuchsia-600">🍦 GELATO (Angelato)</SectionLabel>
+            {/* ICE CREAM */}
+            <SectionLabel className="bg-fuchsia-600">🍦 ICE CREAM</SectionLabel>
             <div className="grid grid-cols-2 gap-2 mb-3">
-              {gelato.map(i => <ItemBtn key={i.id} item={i} big />)}
-            </div>
-            <div className="text-[10px] text-fuchsia-700 bg-fuchsia-50 border-l-4 border-fuchsia-400 px-2 py-1 mb-3 rounded-r">
-              Příchuť vyber v košíku (max 2 — lze kombinovat i u 1 porce).
+              {iceCream.map(i => <ItemBtn key={i.id} item={i} big />)}
             </div>
 
             {/* KÁVA */}
